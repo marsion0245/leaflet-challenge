@@ -18,8 +18,11 @@
 	// API key
 	const API_KEY = "pk.eyJ1IjoibWFyc2lvbiIsImEiOiJjazFpZ3Z4Y2cwd281M2dzMDV2eTY0eWFxIn0.XotU1FxYm5MDX7hHU5FT7w";
 
-	// Scale colors
+	// Magnitude scale colors
 	const quakeColor = ['#99ff99', '#ccff33', '#ffcc00', '#ff9933', '#ff6600', '#ff5050'];
+
+	const formatTime = d3.timeFormat("%m/%d/%Y %H:%M:%S");
+
 
 	// Get earthquake data
 	// d3.json(queryUrl, function(data) {
@@ -47,7 +50,6 @@
 	
 	function onEachFeature(feature, layer) {
 		// Popup
-		var formatTime = d3.timeFormat("%m/%d/%Y %H:%M:%S");
 		layer.bindPopup(
 			[`<h4>${feature.properties.title}</h4><hr>`, 
 			`<div><b>Time:&nbsp;</b>${formatTime(new Date(feature.properties.time))}</div>`,
@@ -56,7 +58,7 @@
 		);
 	}
 
-	function addLegend(map){
+	function addMagnitudeLegend(map){
 		// Lengend with colors and quake magnitude
 		let getText = (i) => i <  quakeColor.length - 1 ? `${i}&ndash;${i + 1}<br>` : `${i}+`;
 		
@@ -69,7 +71,22 @@
 		legend.addTo(map);
 	}
 
-	function createMap(){
+	function addMapTitle(qData, map){
+		
+		let eventCount = qData.length;
+		let fromDate = formatTime(qData.reduce((min, p) => p.properties.time < min ? p.properties.time : min, qData[0].properties.time));
+		let toDate = formatTime(qData.reduce((max, p) => p.properties.time > max ? p.properties.time : max, qData[0].properties.time));
+		
+		let legend = L.control({position: 'topright'});
+			legend.onAdd = () => {
+			let div = L.DomUtil.create('div', 'info maptitle');
+			div.innerHTML = `USGS Earthquake Data<br><hr><div class='maptitletxt'>Events: ${eventCount}</div><div class='maptitletxt'>From: ${fromDate}</div><div class='maptitletxt'>To: ${toDate}</div>`;
+			return div;
+		};
+		legend.addTo(map);
+	}
+
+	function createMap(qData){
 	
 		var hwMap = L.map('hwMap').setView([37.09, -95.71], 5);
 
@@ -83,12 +100,12 @@
 		}).addTo(hwMap);
 		
 		// Eartquake location layer
-		L.geoJSON(quakeData.features.slice(0, 1000), { 
+		L.geoJSON(qData, { 
 			onEachFeature: onEachFeature,
 
 			pointToLayer: function (feature, latlng) {
 				return L.circleMarker(latlng, {
-					radius: (1 + feature.properties.mag) * 4,
+					radius: (1 + feature.properties.mag) * 4, // magnitude scaling 
 					fillColor: quakeColor[Math.min(parseInt(feature.properties.mag),5)],
 					color: "#000",
 					weight: 1,
@@ -97,11 +114,12 @@
 				});			
 			}
 		}).addTo(hwMap);
-		
-		addLegend(hwMap);
+
+		addMapTitle(qData, hwMap);
+		addMagnitudeLegend(hwMap);
 	}	
 
-	createMap();
+	createMap(quakeData.features.slice(0, 1000));
 
 
 	//getEarthquakeData(quakeData.features);
@@ -109,61 +127,3 @@
 
 
 })();
-
-
-/*
-        {
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    -104.9788452,
-                    39.6933755
-                ]
-            },
-            "type": "Feature",
-            "properties": {
-                "popupContent": "This is a B-Cycle Station. Come pick up a bike and pay by the hour. What a deal!"
-            },
-            "id": 74
-        }
-
-
-One value from returned data
-{
-"type":"Feature",
-"id":"us700062kx",
-"properties":{
-	"mag":5.0999999999999996,
-	"place":"Off the east coast of the North Island of New Zealand",
-	"time":1572797249046,
-	"updated":1572799743040,
-	"tz":720,
-	"url":"https://earthquake.usgs.gov/earthquakes/eventpage/us700062kx",
-	"detail":"https://earthquake.usgs.gov/fdsnws/event/1/query?eventid=us700062kx&format=geojson",
-	"felt":null,
-	"cdi":null,
-	"mmi":null,
-	"alert":null,
-	"status":"reviewed",
-	"tsunami":0,
-	"sig":400,
-	"net":"us",
-	"code":"700062kx",
-	"ids":",us700062kx,",
-	"sources":",us,",
-	"types":",geoserve,origin,phase-data,",
-	"nst":null,
-	"dmin":2.7269999999999999,
-	"rms":0.58999999999999997,
-	"gap":60,
-	"magType":"mww",
-	"type":"earthquake",
-	"title":"M 5.1 - Off the east coast of the North Island of New Zealand"
-},
-"geometry":{
-	"type":"Point",
-	"coordinates":
-	[179.52850000000001,-35.014600000000002,54.149999999999999] // lat, lon, depth (km)
-}
-}
-*/

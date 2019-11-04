@@ -9,6 +9,17 @@ html {
   height: 100%;
 }
 
+.maptitle{
+	color: black;
+	font-size: 20px;
+	background-color: white;
+	padding: 5px;
+}
+
+.maptitletxt{
+	font-size: 14px;
+}
+
 .legend {
 	line-height: 18px;
 	color: #555;
