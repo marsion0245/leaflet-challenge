@@ -1,7 +1,8 @@
 
 /*
-	leaflet homework
+	leaflet homework - step 1
 	martin hrbac
+	The code works either with localy stored data or it pulls data from the web site.
 */
 
 "use strict";
@@ -23,23 +24,13 @@
 
 	const formatTime = d3.timeFormat("%m/%d/%Y %H:%M:%S");
 
-	const maxEvents = 2500;
+	const maxEvents = 2500; // limit number of events, the value can be increased; I've observer significant slowdown with higher number of events (15k+)
 
 	// Get earthquake data
 	// d3.json(queryUrl, function(data) {
 		// getEarthquakeData(data.features);
 	// });
 	
-	function onEachFeature(feature, layer) {
-		// Popup
-		layer.bindPopup(
-			[`<h4>${feature.properties.title}</h4><hr>`, 
-			`<div><b>Time:&nbsp;</b>${formatTime(new Date(feature.properties.time))}</div>`,
-			`<div><b>Details:&nbsp;</b><a href="${eventUrl}/${feature.id}" target="_blank">${feature.id}</a></div>`]
-			.join('')
-		);
-	}
-
 	function addMagnitudeLegend(map){
 		// Lengend with colors and quake magnitude
 		let getText = (i) => i <  quakeColor.length - 1 ? `${i}&ndash;${i + 1}<br>` : `${i}+`;
@@ -47,7 +38,7 @@
 		let legend = L.control({position: 'bottomright'});
 		legend.onAdd = () => {
 			let div = L.DomUtil.create('div', 'info legend');
-			div.innerHTML = quakeColor.reduce((total, currentValue, idx) => [total, '<i style="background:', currentValue, '"></i>', getText(idx)].join(''), '<b>Magnitide:</b><br>'); // colors array into legend
+			div.innerHTML = quakeColor.reduce((total, currentValue, idx) => [total, '<i style="background:', currentValue, '"></i>', getText(idx)].join(''), '<b>Magnitude:</b><br>'); // colors array into legend
 			return div;
 		};
 		legend.addTo(map);
@@ -83,9 +74,18 @@
 			accessToken: API_KEY
 		}).addTo(hwMap);
 		
+		
+		let addEarthquakePopup = (feature, layer) => 
+			layer.bindPopup(
+				[`<h4>${feature.properties.title}</h4><hr>`, 
+				`<div><b>Time:&nbsp;</b>${formatTime(new Date(feature.properties.time))}</div>`,
+				`<div><b>Details:&nbsp;</b><a href="${eventUrl}/${feature.id}" target="_blank">${feature.id}</a></div>`]
+				.join('')
+			);
+		
 		// Eartquake location layer
 		L.geoJSON(qData, { 
-			onEachFeature: onEachFeature,
+			onEachFeature: addEarthquakePopup,
 
 			pointToLayer: function (feature, latlng) {
 				return L.circleMarker(latlng, {
@@ -105,36 +105,5 @@
 
 	createMap(earthquakeDataLocal.features.slice(0, maxEvents));
 
-
 })();
-
-
-
-
-/*
-to be deleted
-
-	//getEarthquakeData(quakeData.features);
-
-	function getEarthquakeData(quakeEvents){
-		
-		let reddata = quakeEvents.map(d => {
-			return {
-				id: d.id,
-				title: d.properties.title,
-				mag: d.properties.mag,
-				time: new Date(d.properties.time),
-				coordinates: d.geometry.coordinates
-			};
-		});
-
-		// console.log(reddata);
-		
-		// quakeEvents.forEach((q)=>{
-			// console.log(q.properties.mag);
-		// });
-	}
-
-
-*/
 

@@ -1,0 +1,41 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+
+#hwMap,
+body,
+html {
+  height: 100%;
+}
+
+.maptitle{
+	color: black;
+	font-size: 18px;
+	font-weight: bold;
+	background-color: white;
+	padding: 10px;
+}
+
+.maptitletxt{
+	font-size: 14px;
+}
+
+.maptitletxt span{
+	min-width: 60px; 
+	display: inline-block;
+}
+
+.legend {
+	line-height: 18px;
+	color: #555;
+	background-color: white;
+	padding: 5px;
+}
+.legend i {
+	width: 18px;
+	height: 18px;
+	float: left;
+	margin-right: 8px;
+	opacity: 0.7;
+}
