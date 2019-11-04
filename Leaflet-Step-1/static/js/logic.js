@@ -9,6 +9,11 @@
 
 // IIFE
 (()=>{
+	
+	// Set this value to true if you want to load new data from USGS when page is loaded.
+	// Leave it false to laod data stored with the solution.
+	const loadNewData = true;
+	
 	// USGS endpoint query 
 	// See https://earthquake.usgs.gov/fdsnws/event/1/ for parameters and default values
 	// endtime: NOW; starttime: NOW - 30days 
@@ -26,10 +31,14 @@
 
 	const maxEvents = 2500; // limit number of events, the value can be increased; I've observer significant slowdown with higher number of events (15k+)
 
-	// Get earthquake data
-	// d3.json(queryUrl, function(data) {
-		// getEarthquakeData(data.features);
-	// });
+	if(loadNewData){
+		// Get earthquake data
+		d3.json(queryUrl, function(data) {
+			createMap(data.features.slice(0, maxEvents));
+		});
+	}else{
+		createMap(earthquakeDataLocal.features.slice(0, maxEvents));
+	}
 	
 	function addMagnitudeLegend(map){
 		// Lengend with colors and quake magnitude
@@ -102,8 +111,5 @@
 		addMapTitle(qData, hwMap);
 		addMagnitudeLegend(hwMap);
 	}	
-
-	createMap(earthquakeDataLocal.features.slice(0, maxEvents));
-
 })();
 

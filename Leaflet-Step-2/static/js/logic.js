@@ -9,6 +9,11 @@
 
 // IIFE
 (()=>{
+	
+	// Set this value to true if you want to load new data from USGS when page is loaded.
+	// Leave it false to laod data stored with the solution.
+	const loadNewData = true;
+	
 	// USGS endpoint query 
 	// See https://earthquake.usgs.gov/fdsnws/event/1/ for parameters and default values
 	// endtime: NOW; starttime: NOW - 30days 
@@ -27,6 +32,15 @@
 	const formatTime = d3.timeFormat("%m/%d/%Y %H:%M:%S");
 
 	let hwMap = createMap(earthquakeDataLocal.features.slice(0, maxEvents));
+
+	if(loadNewData){
+		// Get earthquake data
+		d3.json(queryUrl, function(data) {
+			createMap(data.features.slice(0, maxEvents));
+		});
+	}else{
+		createMap(earthquakeDataLocal.features.slice(0, maxEvents));
+	}
 
 	// Get earthquake data
 	function reloadData(){
@@ -110,7 +124,7 @@
 		let baseMaps = {
 			"Dark Map": darkMap,
 			"Light Map": lightMap,
-			"G-Satelite" : googleSat, 
+			"G-Satellite" : googleSat, 
 			"G-Streets" : googleStreets 
 		};
 
