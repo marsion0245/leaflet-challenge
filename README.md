@@ -44,7 +44,7 @@ Both Step1 and Step2 have their folders with identical structures:
 ![Step1](Documents/Step1.png)
  
 
-## Step 2 Pages
+## Step 2 Page
 
 ### Light Map
 
