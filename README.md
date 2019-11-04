@@ -54,3 +54,8 @@ Both Step1 and Step2 have their folders with identical structures:
 
 ![Step2](Documents/Step2_Satellite.png)
 
+### Earhtquake Marker
+
+* Click on the marker Details to open USGS page with event details 
+
+![EearthquekeMarker](Documents/EearthquekeMarker.png)

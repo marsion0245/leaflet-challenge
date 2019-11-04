@@ -31,30 +31,21 @@
 
 	const formatTime = d3.timeFormat("%m/%d/%Y %H:%M:%S");
 
-	let hwMap = createMap(earthquakeDataLocal.features.slice(0, maxEvents));
+	let hwMap = null;
 
 	if(loadNewData){
 		// Get earthquake data
 		d3.json(queryUrl, function(data) {
-			createMap(data.features.slice(0, maxEvents));
+			hwMap = createMap(data.features.slice(0, maxEvents));
 		});
 	}else{
-		createMap(earthquakeDataLocal.features.slice(0, maxEvents));
+		hwMap = createMap(earthquakeDataLocal.features.slice(0, maxEvents));
 	}
 
 	// Get earthquake data
 	function reloadData(){
 		try{
-			document.body.style.cursor = 'wait';
-			d3.json(queryUrl, function(data) {
-				if (hwMap != undefined) { 
-					hwMap.off();
-					hwMap.remove();
-				} 
-				createMap(data.features);
-			});
-			alert('Data loaded.');
-			document.body.style.cursor = 'default';
+			location.reload(); // could finish this non requested feature
 		}catch(e){
 			console.log(e);
 		}
@@ -127,15 +118,17 @@
 			"G-Satellite" : googleSat, 
 			"G-Streets" : googleStreets 
 		};
-
-		let addEarthquakePopup = (feature, layer) => 
-			layer.bindPopup(
-				[`<h4>${feature.properties.title}</h4><hr>`, 
-				`<div><b>Time:&nbsp;</b>${formatTime(new Date(feature.properties.time))}</div>`,
-				`<div><b>Details:&nbsp;</b><a href="${eventUrl}/${feature.id}" target="_blank">${feature.id}</a></div>`]
-				.join('')
-			);
 				
+		let addEarthquakePopup = (feature, layer) => 
+			{ 
+				layer.bindPopup(
+					[`<h4>${feature.properties.title}</h4><hr>`, 
+					`<div><b>Time:&nbsp;</b>${formatTime(new Date(feature.properties.time))}</div>`,
+					`<div><b>Details:&nbsp;</b><a href="${eventUrl}/${feature.id}" target="_blank">${feature.id}</a></div>`]
+					.join(''));
+				layer.myTag = "myGeoJSON";
+			};
+			
 		// Eartquake location layer
 		let earthQuakeGeo = L.geoJSON(qData, { 
 			onEachFeature: addEarthquakePopup,
@@ -170,12 +163,10 @@
 		addMagnitudeLegend(hwMap);
 		
 		// Add layers control
-		L.control.layers(baseMaps, overlayMaps, {
-			collapsed: false
-		}).addTo(hwMap);
+		L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(hwMap);
 		
 		// Attach event handler
-		d3.selectAll("#reloadDataBtn").on("mouseout", function(){ reloadData(); });
+		d3.selectAll("#reloadDataBtn").on("click", function(){ reloadData(); });
 		
 		return hwMap;
 	}	
