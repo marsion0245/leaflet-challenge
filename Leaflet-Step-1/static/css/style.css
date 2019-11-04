@@ -11,13 +11,19 @@ html {
 
 .maptitle{
 	color: black;
-	font-size: 20px;
+	font-size: 18px;
+	font-weight: bold;
 	background-color: white;
-	padding: 5px;
+	padding: 10px;
 }
 
 .maptitletxt{
 	font-size: 14px;
+}
+
+.maptitletxt span{
+	min-width: 60px; 
+	display: inline-block;
 }
 
 .legend {

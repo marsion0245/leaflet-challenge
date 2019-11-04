@@ -23,30 +23,12 @@
 
 	const formatTime = d3.timeFormat("%m/%d/%Y %H:%M:%S");
 
+	const maxEvents = 2500;
 
 	// Get earthquake data
 	// d3.json(queryUrl, function(data) {
 		// getEarthquakeData(data.features);
 	// });
-
-	function getEarthquakeData(quakeEvents){
-		
-		let reddata = quakeEvents.map(d => {
-			return {
-				id: d.id,
-				title: d.properties.title,
-				mag: d.properties.mag,
-				time: new Date(d.properties.time),
-				coordinates: d.geometry.coordinates
-			};
-		});
-
-		// console.log(reddata);
-		
-		// quakeEvents.forEach((q)=>{
-			// console.log(q.properties.mag);
-		// });
-	}
 	
 	function onEachFeature(feature, layer) {
 		// Popup
@@ -78,9 +60,11 @@
 		let toDate = formatTime(qData.reduce((max, p) => p.properties.time > max ? p.properties.time : max, qData[0].properties.time));
 		
 		let legend = L.control({position: 'topright'});
-			legend.onAdd = () => {
+		legend.onAdd = () => {
 			let div = L.DomUtil.create('div', 'info maptitle');
-			div.innerHTML = `USGS Earthquake Data<br><hr><div class='maptitletxt'>Events: ${eventCount}</div><div class='maptitletxt'>From: ${fromDate}</div><div class='maptitletxt'>To: ${toDate}</div>`;
+			div.innerHTML = [`USGS Earthquake Data<br><hr>`, 
+							 `<div class='maptitletxt'><span>From:</span>${fromDate}</div><div class='maptitletxt'><span>To:</span>${toDate}</div>`,
+							 `<div class='maptitletxt'><span>Events:</span>${eventCount}</div>`].join('');
 			return div;
 		};
 		legend.addTo(map);
@@ -119,11 +103,38 @@
 		addMagnitudeLegend(hwMap);
 	}	
 
-	createMap(quakeData.features.slice(0, 1000));
-
-
-	//getEarthquakeData(quakeData.features);
-
+	createMap(earthquakeDataLocal.features.slice(0, maxEvents));
 
 
 })();
+
+
+
+
+/*
+to be deleted
+
+	//getEarthquakeData(quakeData.features);
+
+	function getEarthquakeData(quakeEvents){
+		
+		let reddata = quakeEvents.map(d => {
+			return {
+				id: d.id,
+				title: d.properties.title,
+				mag: d.properties.mag,
+				time: new Date(d.properties.time),
+				coordinates: d.geometry.coordinates
+			};
+		});
+
+		// console.log(reddata);
+		
+		// quakeEvents.forEach((q)=>{
+			// console.log(q.properties.mag);
+		// });
+	}
+
+
+*/
+
