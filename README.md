@@ -44,15 +44,24 @@ Both Step1 and Step2 have their folders with identical structures:
 ![Step1](Documents/Step1.png)
  
 
-## Step 2 Page
+## Step 2 Pages
 
 ### Light Map
 
-![Step2](Documents/Step2_Light.png)
+![Step2_Light](Documents/Step2_Light.png)
+
+### Dark Map
+
+![Step2_Dark](Documents/Step2_Dark.png)
 
 ### Satelite Map
 
-![Step2](Documents/Step2_Satellite.png)
+![Step2_Satellite](Documents/Step2_Satellite.png)
+
+
+### Satelite Map
+
+![Step2_Street](Documents/Step2_Street.png)
 
 ### Earhtquake Marker
 
