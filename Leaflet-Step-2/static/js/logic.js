@@ -13,7 +13,9 @@
 	// See https://earthquake.usgs.gov/fdsnws/event/1/ for parameters and default values
 	// endtime: NOW; starttime: NOW - 30days 
 	// Note: The service limits queries to 20000, and any that exceed this limit will generate a HTTP response code “400 Bad Request
-	const queryUrl = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=2500";
+	const maxEvents = 2500; // limit number of events, the value can be increased; I've observer significant slowdown with higher number of events (15k+)
+	
+	const queryUrl = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=" + maxEvents;
 	const eventUrl = "https://earthquake.usgs.gov/earthquakes/eventpage/";
 
 	// API key
@@ -24,20 +26,24 @@
 
 	const formatTime = d3.timeFormat("%m/%d/%Y %H:%M:%S");
 
-	const maxEvents = 2500; // limit number of events, the value can be increased; I've observer significant slowdown with higher number of events (15k+)
+	let hwMap = createMap(earthquakeDataLocal.features.slice(0, maxEvents));
 
 	// Get earthquake data
 	function reloadData(){
-		document.body.style.cursor = 'wait'
-		d3.json(queryUrl, function(data) {
-			console.log(data);
-			if (hwMap != undefined) { 
-				hwMap.off();
-				hwMap.remove();
-			} 
-			createMap(data.features);
-		});
-		document.body.style.cursor = 'default';
+		try{
+			document.body.style.cursor = 'wait';
+			d3.json(queryUrl, function(data) {
+				if (hwMap != undefined) { 
+					hwMap.off();
+					hwMap.remove();
+				} 
+				createMap(data.features);
+			});
+			alert('Data loaded.');
+			document.body.style.cursor = 'default';
+		}catch(e){
+			console.log(e);
+		}
 	}
 
 	function addMagnitudeLegend(map){
@@ -159,8 +165,6 @@
 		
 		return hwMap;
 	}	
-
-	let hwMap = createMap(earthquakeDataLocal.features.slice(0, maxEvents));
 
 })();
 
